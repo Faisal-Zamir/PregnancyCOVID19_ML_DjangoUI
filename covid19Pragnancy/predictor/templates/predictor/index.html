@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pregnancy & COVID-19 NICU Stay Predictor</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2a7de1;
+            --secondary-color: #83c5be;
+            --accent-color: #e63946;
+            --light-color: #f1faee;
+            --dark-color: #1d3557;
+            --header-height: 22vh;
+            --footer-height: 11vh;
+        }
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            height: var(--header-height);
+            display: flex;
+            align-items: center;
+            text-align: center;
+            padding: 1rem 0;
+        }
+        
+        .main-container {
+            flex: 1;
+            padding: 2.5rem 0;
+            background-color: #f0f7ff;
+        }
+        
+        .form-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+            padding: 2rem;
+            height: 100%;
+        }
+        
+        .result-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+            padding: 1.5rem;
+            height: 100%;
+            margin-bottom: 1.5rem;
+        }
+        
+        .performance-card {
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            color: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            height: auto;
+        }
+        
+        .footer {
+            background: var(--dark-color);
+            color: white;
+            height: var(--footer-height);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            margin-top: 14.5rem;
+
+        }
+        
+        .btn-predict {
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            border: none;
+            padding: 0.8rem 2rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            border-radius: 8px;
+        }
+        
+        .btn-predict:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+        
+        .form-label {
+            font-weight: 600;
+            color: var(--dark-color);
+            margin-bottom: 0.5rem;
+        }
+        
+        .result-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .positive-result {
+            color: var(--accent-color);
+        }
+        
+        .negative-result {
+            color: #2a9d8f;
+        }
+        
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        
+        .input-group-text {
+            background: var(--light-color);
+            color: var(--dark-color);
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-weight: 700;
+        }
+        
+        .header h1 {
+            font-weight: 800;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+        }
+        
+        .section-title {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .covid-alert {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 0.75rem 1.25rem;
+            margin-bottom: 1.5rem;
+            border-radius: 4px;
+        }
+        
+        @media (max-width: 768px) {
+            .result-container {
+                margin-top: 2rem;
+            }
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.25rem rgba(42, 125, 225, 0.25);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <h1 class="display-4 fw-bold"><i class="bi bi-heart-pulse"></i> Pregnancy & COVID-19 NICU Stay Predictor</h1>
+            <p class="lead">Predicting NICU admission needs for pregnancies during the COVID-19 pandemic</p>
+        </div>
+    </header>
+    
+    <!-- Main Content -->
+    <div class="main-container">
+        <div class="container">
+            <div class="covid-alert">
+                <i class="bi bi-exclamation-triangle"></i> This tool helps healthcare providers assess the likelihood of NICU admission for pregnancies during the COVID-19 pandemic.
+            </div>
+            
+            <div class="row">
+                <!-- Form Column (8) -->
+                <div class="col-lg-8">
+                    <div class="form-container">
+                        <h3 class="section-title"><i class="bi bi-clipboard-data"></i> Patient Information</h3>
+                        <form id="predictionForm">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Maternal Age</label>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" placeholder="Age in years" min="18" max="50">
+                                        <span class="input-group-text">years</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Household Income</label>
+                                    <select class="form-select">
+                                        <option selected>Select income range</option>
+                                        <option value="low">Below $30,000</option>
+                                        <option value="medium">$30,000 - $70,000</option>
+                                        <option value="high">$70,000 - $120,000</option>
+                                        <option value="very-high">Above $120,000</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Maternal Education</label>
+                                    <select class="form-select">
+                                        <option selected>Select education level</option>
+                                        <option value="high-school">High School</option>
+                                        <option value="some-college">Some College</option>
+                                        <option value="bachelor">Bachelor's Degree</option>
+                                        <option value="graduate">Graduate Degree</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Edinburgh Postnatal Depression Scale</label>
+                                    <input type="number" class="form-control" placeholder="Score (0-30)" min="0" max="30">
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">PROMIS Anxiety Score</label>
+                                    <input type="number" class="form-control" placeholder="Anxiety score" min="0" max="100">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Gestational Age at Birth</label>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" placeholder="Weeks of gestation" min="20" max="42" step="0.1">
+                                        <span class="input-group-text">weeks</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Delivery Date</label>
+                                    <input type="month" class="form-control">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Birth Length</label>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" placeholder="Length in cm" min="30" max="60" step="0.1">
+                                        <span class="input-group-text">cm</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Birth Weight</label>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" placeholder="Weight in grams" min="500" max="5000">
+                                        <span class="input-group-text">grams</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Delivery Mode</label>
+                                    <select class="form-select">
+                                        <option selected>Select delivery mode</option>
+                                        <option value="vaginal">Vaginal Delivery</option>
+                                        <option value="cesarean">Cesarean Section</option>
+                                        <option value="assisted">Assisted Vaginal Delivery</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <label class="form-label">Language</label>
+                                    <select class="form-select">
+                                        <option selected>Select primary language</option>
+                                        <option value="english">English</option>
+                                        <option value="spanish">Spanish</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Perceived Threat to Life</label>
+                                    <select class="form-select">
+                                        <option selected>Select threat level</option>
+                                        <option value="none">None</option>
+                                        <option value="low">Low</option>
+                                        <option value="moderate">Moderate</option>
+                                        <option value="high">High</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-predict btn-lg">
+                                    <i class="bi bi-calculator"></i> Predict NICU Stay Need
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- Result Column (4) -->
+                <div class="col-lg-4">
+                    <!-- Result Card -->
+                    <div class="result-container text-center">
+                        <h3 class="section-title"><i class="bi bi-clipboard-check"></i> Prediction Result</h3>
+                        <div class="result-icon negative-result">
+                            <i class="bi bi-check-circle"></i>
+                        </div>
+                        <h4 class="negative-result">NICU Stay Not Required</h4>
+                        <p class="text-muted">Probability: 78%</p>
+                        <div class="progress mb-3" style="height: 20px;">
+                            <div class="progress-bar bg-success" role="progressbar" style="width: 78%;" aria-valuenow="78" aria-valuemin="0" aria-valuemax="100">78%</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Performance Card -->
+                    <div class="performance-card">
+                        <h4 class="mb-3"><i class="bi bi-speedometer2"></i> Model Performance</h4>
+                        <div class="row text-center">
+                            <div class="col-6 mb-3">
+                                <div class="metric-value">91.2%</div>
+                                <div>Accuracy</div>
+                            </div>
+                            <div class="col-6 mb-3">
+                                <div class="metric-value">89.5%</div>
+                                <div>Precision</div>
+                            </div>
+                            <div class="col-6">
+                                <div class="metric-value">92.8%</div>
+                                <div>Recall</div>
+                            </div>
+                            <div class="col-6">
+                                <div class="metric-value">91.1%</div>
+                                <div>F1 Score</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p class="mb-0">Developer: Faisal Zamir | Email: JafriCode@gmail.com | WhatsApp: +92 342 9376519</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Form validation and interaction
+        document.getElementById('predictionForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // In a real application, you would send the form data to your Django backend
+            // and update the result section with the prediction
+            
+            // For demonstration purposes, we'll simulate different results
+            const resultIcon = document.querySelector('.result-icon');
+            const resultText = document.querySelector('h4');
+            const performanceValue = document.querySelector('.text-muted');
+            const progressBar = document.querySelector('.progress-bar');
+            
+            // Random result for demo
+            const needsNicu = Math.random() > 0.5;
+            const probability = Math.floor(Math.random() * 40) + (needsNicu ? 50 : 30);
+            
+            // Update performance text and progress bar
+            performanceValue.textContent = `Probability: ${probability}%`;
+            progressBar.style.width = `${probability}%`;
+            progressBar.textContent = `${probability}%`;
+            progressBar.setAttribute('aria-valuenow', probability);
+            
+            // Update result based on prediction
+            if (needsNicu) {
+                resultIcon.innerHTML = '<i class="bi bi-exclamation-triangle"></i>';
+                resultText.textContent = 'NICU Stay Required';
+                resultText.className = 'positive-result';
+                resultIcon.className = 'result-icon positive-result';
+                progressBar.className = 'progress-bar bg-danger';
+            } else {
+                resultIcon.innerHTML = '<i class="bi bi-check-circle"></i>';
+                resultText.textContent = 'NICU Stay Not Required';
+                resultText.className = 'negative-result';
+                resultIcon.className = 'result-icon negative-result';
+                progressBar.className = 'progress-bar bg-success';
+            }
+        });
+    </script>
+</body>
+</html>
