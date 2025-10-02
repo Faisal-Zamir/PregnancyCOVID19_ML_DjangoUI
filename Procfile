@@ -1,0 +1,1 @@
+web: gunicorn covid19Pragnancy.wsgi:application --bind 0.0.0.0:$PORT
